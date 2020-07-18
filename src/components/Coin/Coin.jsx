@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Coin.css';
+import PropTypes from 'prop-types';
 
 export default class Coin extends Component {
     render() {
@@ -11,4 +12,10 @@ export default class Coin extends Component {
             </tr>
         );
     }
+}
+
+Coin.propTypes = {
+    name: PropTypes.string.isRequired,
+    ticker: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired
 }
