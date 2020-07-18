@@ -8,8 +8,12 @@ export default class Coin extends Component {
         this.state = {
             price: this.props.price ,
         }
+
+        // explicitly set the context for the event handler
+        this.handleClick = this.handleClick.bind(this);
     }
 
+    /*
     componentDidMount() {
         setInterval(() => {
             // set the state to a new random value
@@ -17,13 +21,28 @@ export default class Coin extends Component {
 
             // DON'T DO THIS - only in constructor is this allowed
             // this.state.price = this.state.price * randomPercentage;
-            
+
             this.setState(function(oldState) {
                 return {
                     price: oldState.price * randomPercentage
                 };
             });
         }, 1000);
+    }
+    */
+
+    handleClick(event) {
+        // prevent the default action of submitting the form
+        event.preventDefault();
+
+        const randomPercentage = 0.995 + Math.random() * 0.01;
+        
+        // the "this" context is different when the event is invoked
+        this.setState(function(oldState) {
+            return {
+                price: oldState.price * randomPercentage
+            };
+        });
     }
 
     render() {
@@ -32,6 +51,11 @@ export default class Coin extends Component {
                 <td>{this.props.name}</td>
                 <td>{this.props.ticker}</td>
                 <td>${this.state.price}</td>
+                <td>
+                    <form action="#" method="POST">
+                        <button onClick={this.handleClick}>Refresh</button>
+                    </form>
+                </td>
             </tr>
         );
     }
