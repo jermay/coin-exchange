@@ -13,69 +13,62 @@ const Content = styled.div`
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      balance: 10000,
-      showBalance: true,
-      coinData: [
-        {
-          name: 'Bitcoin',
-          ticker: 'BTC',
-          balance: 0.5,
-          price: 9999.99
-        },
-        {
-          name: "Ethereum",
-          ticker: "ETH",
-          balance: 32.0,
-          price: 299.9
-        },
-        {
-          name: "Tether",
-          ticker: "USDT",
-          balance: 0,
-          price: 1.0
-        },
-        {
-          name: "Ripple",
-          ticker: "XRP",
-          balance: 1000,
-          price: 0.2
+  state = {
+    balance: 10000,
+    showBalance: true,
+    coinData: [
+      {
+        name: 'Bitcoin',
+        ticker: 'BTC',
+        balance: 0.5,
+        price: 9999.99
+      },
+      {
+        name: "Ethereum",
+        ticker: "ETH",
+        balance: 32.0,
+        price: 299.9
+      },
+      {
+        name: "Tether",
+        ticker: "USDT",
+        balance: 0,
+        price: 1.0
+      },
+      {
+        name: "Ripple",
+        ticker: "XRP",
+        balance: 1000,
+        price: 0.2
 
-        },
-        {
-          name: "Bitcoin Cash",
-          ticker: 'BCH',
-          balance: 0,
-          price: 298.99
-        }
-      ]
-    }
-    this.handleRefresh = this.handleRefresh.bind(this);
-    this.handleToggleShowBalance = this.handleToggleShowBalance.bind(this);
+      },
+      {
+        name: "Bitcoin Cash",
+        ticker: 'BCH',
+        balance: 0,
+        price: 298.99
+      }
+    ]
   }
 
-  handleRefresh(valueChangeticker) {
+  // using arrow functions for event handlers allows us
+  // to get rid of the explicit event bindings
+
+  handleRefresh = (valueChangeticker) => {
     // generate the new state by cloning the old state
     // and updating the target coin price
-    const newCoinData = this.state.coinData.map(function ({ ticker, name, balance, price }) {
-      let newPrice = price;
-      if (ticker === valueChangeticker) {
+    const newCoinData = this.state.coinData.map(function (values) {
+      let newValues = { ...values}; // shallow copy
+      if (values.ticker === valueChangeticker) {
         const randomPercentage = 0.995 + Math.random() * 0.01;
-        newPrice *= randomPercentage;
+        newValues.price *= randomPercentage;
       }
-      return {
-        ticker,
-        name,
-        balance,
-        price: newPrice
-      }
+      return newValues;
     });
     this.setState({ coinData: newCoinData });
   }
 
-  handleToggleShowBalance() {
+  handleToggleShowBalance = () => {
     this.setState({showBalance: !this.state.showBalance});
   }
 
