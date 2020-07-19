@@ -46,15 +46,31 @@ class App extends React.Component {
         }
       ]
     }
+    this.handleRefresh = this.handleRefresh.bind(this);
   }
 
-  // note: the "key" attribute is required to uniquely identify the <td>
+  handleRefresh(valueChangeticker) {
+    const newCoinData = this.state.coinData.map(function ({ ticker, name, price }) {
+      let newPrice = price;
+      if (ticker === valueChangeticker) {
+        const randomPercentage = 0.995 + Math.random() * 0.01;
+        newPrice *= randomPercentage;
+      }
+      return {
+        ticker,
+        name,
+        price: newPrice
+      }
+    });
+    this.setState({ coinData: newCoinData });
+  }
+
   render() {
     return (
       <Content>
         <AppHeader />
         <AccountBalance amount={this.state.balance} />
-        <CoinList coinData={this.state.coinData} />
+        <CoinList coinData={this.state.coinData} handleRefresh={this.handleRefresh} />
       </Content>
     );
   }

@@ -9,6 +9,8 @@ const Table = styled.table`
 `;
 
 export default class CoinList extends Component {
+
+  // note: the "key" attribute is required to uniquely identify the <td>
   render() {
     return (
       <>
@@ -23,7 +25,11 @@ export default class CoinList extends Component {
           <tbody>
             {
               this.props.coinData.map(({ name, ticker, price }) =>
-                <Coin key={ticker} name={name} ticker={ticker} price={price} />)
+                <Coin key={ticker}
+                      handleRefresh={this.props.handleRefresh}
+                      name={name}
+                      ticker={ticker}
+                      price={price} />)
             }
           </tbody>
         </Table>
