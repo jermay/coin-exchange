@@ -12,6 +12,9 @@ export default class CoinList extends Component {
 
   // note: the "key" attribute is required to uniquely identify the <td>
   render() {
+    const balance = this.props.showBalance ?
+      <th>Balance</th> : null;
+      
     return (
       <>
         <Table>
@@ -19,16 +22,20 @@ export default class CoinList extends Component {
             <tr>
               <th>Name</th>
               <th>Ticker</th>
+              {balance}
               <th>Price</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {
-              this.props.coinData.map(({ name, ticker, price }) =>
+              this.props.coinData.map(({ name, ticker, balance, price }) =>
                 <Coin key={ticker}
                       handleRefresh={this.props.handleRefresh}
                       name={name}
                       ticker={ticker}
+                      balance={balance}
+                      showBalance={this.props.showBalance}
                       price={price} />)
             }
           </tbody>

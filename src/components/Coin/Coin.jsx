@@ -30,10 +30,14 @@ export default class Coin extends Component {
     }
 
     render() {
+        const balance = this.props.showBalance ?
+            <Td>{this.props.balance}</Td> : null;
+            
         return (
             <tr>
                 <Td>{this.props.name}</Td>
                 <Td>{this.props.ticker}</Td>
+                {balance}
                 <Td>${this.props.price}</Td>
                 <Td>
                     <form action="#" method="POST">
