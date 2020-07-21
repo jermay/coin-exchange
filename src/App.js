@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 import AppHeader from './components/AppHeader/AppHeader';
 import AccountBalance from './components/AccountBalance/AccountBalance';
@@ -11,65 +12,68 @@ const Content = styled.div`
   color: #cccccc
 `;
 
+const COIN_COUNT = 10;
+const API_BASE_URL = 'https://api.coinpaprika.com/v1';
+
 class App extends React.Component {
 
   state = {
     balance: 10000,
     showBalance: true,
-    coinData: [
-      {
-        name: 'Bitcoin',
-        ticker: 'BTC',
-        balance: 0.5,
-        price: 9999.99
-      },
-      {
-        name: "Ethereum",
-        ticker: "ETH",
-        balance: 32.0,
-        price: 299.9
-      },
-      {
-        name: "Tether",
-        ticker: "USDT",
-        balance: 0,
-        price: 1.0
-      },
-      {
-        name: "Ripple",
-        ticker: "XRP",
-        balance: 1000,
-        price: 0.2
+    coinData: []
+  }
 
-      },
-      {
-        name: "Bitcoin Cash",
-        ticker: 'BCH',
+  componentDidMount = async () => {
+    const response = await this.getCoinList();
+    const coinIds = response.data
+      .slice(0, COIN_COUNT)
+      .map(coin => coin.id);
+
+    // retrieve the prices
+    const promises = coinIds.map(id => this.getCoinPrice(id));
+    const coinData = await Promise.all(promises);
+    const coinPriceData = coinData.map(response => {
+      const coin = response.data;
+      return {
+        key: coin.id,
+        name: coin.name,
+        ticker: coin.symbol,
         balance: 0,
-        price: 298.99
+        price: coin.quotes['USD'].price
       }
-    ]
+    })
+    this.setState({ coinData: coinPriceData })
+  };
+
+  getCoinList = () => {
+    return axios.get(`${API_BASE_URL}/coins`);
+  }
+
+  getCoinPrice = (id) => {
+    return axios.get(`${API_BASE_URL}/tickers/${id}`);
   }
 
   // using arrow functions for event handlers allows us
   // to get rid of the explicit event bindings
 
-  handleRefresh = (valueChangeticker) => {
+  handleRefresh = async (valueChangeticker) => {
     // generate the new state by cloning the old state
     // and updating the target coin price
-    const newCoinData = this.state.coinData.map(function (values) {
-      let newValues = { ...values}; // shallow copy
+    const responses = this.state.coinData.map(async values => {
+      let newValues = { ...values }; // shallow copy      
       if (values.ticker === valueChangeticker) {
-        const randomPercentage = 0.995 + Math.random() * 0.01;
-        newValues.price *= randomPercentage;
+        const response = await this.getCoinPrice(values.key);
+        newValues.price = response.data.quotes['USD'].price;
       }
       return newValues;
     });
+    const newCoinData = await Promise.all(responses);
+
     this.setState({ coinData: newCoinData });
   }
 
   handleToggleShowBalance = () => {
-    this.setState({showBalance: !this.state.showBalance});
+    this.setState({ showBalance: !this.state.showBalance });
   }
 
   render() {
@@ -77,11 +81,11 @@ class App extends React.Component {
       <Content>
         <AppHeader />
         <AccountBalance amount={this.state.balance}
-            showBalance={this.state.showBalance}
-            handleToggleShowBalance={this.handleToggleShowBalance}/>
+          showBalance={this.state.showBalance}
+          handleToggleShowBalance={this.handleToggleShowBalance} />
         <CoinList coinData={this.state.coinData}
-            handleRefresh={this.handleRefresh}
-            showBalance={this.state.showBalance} />
+          handleRefresh={this.handleRefresh}
+          showBalance={this.state.showBalance} />
       </Content>
     );
   }
