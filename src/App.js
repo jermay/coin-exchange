@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -15,22 +15,21 @@ const Content = styled.div`
 const COIN_COUNT = 10;
 const API_BASE_URL = 'https://api.coinpaprika.com/v1';
 
-class App extends React.Component {
+function App(props) {
 
-  state = {
-    balance: 10000,
-    showBalance: true,
-    coinData: []
-  }
+  // state using hooks
+  const [balance, setBalance] = useState(10000);
+  const [showBalance, setShowBalance] = useState(true);
+  const [coinData, setCoinData] = useState([]);
 
-  componentDidMount = async () => {
-    const response = await this.getCoinList();
+  const componentDidMount = async () => {
+    const response = await getCoinList();
     const coinIds = response.data
       .slice(0, COIN_COUNT)
       .map(coin => coin.id);
 
     // retrieve the prices
-    const promises = coinIds.map(id => this.getCoinPrice(id));
+    const promises = coinIds.map(id => getCoinPrice(id));
     const coinData = await Promise.all(promises);
     const coinPriceData = coinData.map(response => {
       const coin = response.data;
@@ -41,54 +40,62 @@ class App extends React.Component {
         balance: 0,
         price: coin.quotes['USD'].price
       }
-    })
-    this.setState({ coinData: coinPriceData })
+    });
+    setCoinData(coinPriceData);
   };
 
-  getCoinList = () => {
+  // useEffect can't return a promise or will get errors
+  useEffect(function() {
+    if (coinData.length === 0) {
+      componentDidMount();
+    } else {
+      // component did update
+    }
+  })
+
+  const getCoinList = () => {
     return axios.get(`${API_BASE_URL}/coins`);
   }
 
-  getCoinPrice = (id) => {
+  const getCoinPrice = (id) => {
     return axios.get(`${API_BASE_URL}/tickers/${id}`);
   }
 
   // using arrow functions for event handlers allows us
   // to get rid of the explicit event bindings
 
-  handleRefresh = async (valueChangeticker) => {
+  const handleRefresh = async (valueChangeticker) => {
     // generate the new state by cloning the old state
     // and updating the target coin price
-    const responses = this.state.coinData.map(async values => {
+    const responses = coinData.map(async values => {
       let newValues = { ...values }; // shallow copy      
       if (values.ticker === valueChangeticker) {
-        const response = await this.getCoinPrice(values.key);
+        const response = await getCoinPrice(values.key);
         newValues.price = response.data.quotes['USD'].price;
       }
       return newValues;
     });
     const newCoinData = await Promise.all(responses);
 
-    this.setState({ coinData: newCoinData });
+    setCoinData(newCoinData);
   }
 
-  handleToggleShowBalance = () => {
-    this.setState({ showBalance: !this.state.showBalance });
+  const handleToggleShowBalance = () => {
+    setShowBalance(oldValue => !oldValue);
   }
 
-  render() {
-    return (
-      <Content>
-        <AppHeader />
-        <AccountBalance amount={this.state.balance}
-          showBalance={this.state.showBalance}
-          handleToggleShowBalance={this.handleToggleShowBalance} />
-        <CoinList coinData={this.state.coinData}
-          handleRefresh={this.handleRefresh}
-          showBalance={this.state.showBalance} />
-      </Content>
-    );
-  }
+  return (
+    <Content>
+      <AppHeader />
+      <AccountBalance amount={balance}
+        showBalance={showBalance}
+        handleToggleShowBalance={handleToggleShowBalance} />
+      <CoinList coinData={coinData}
+        handleRefresh={handleRefresh}
+        showBalance={showBalance} />
+    </Content>
+  );
+
 }
 
 export default App;

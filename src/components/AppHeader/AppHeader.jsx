@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import logo from './logo.svg';
 
@@ -23,15 +23,13 @@ const H1 = styled.h1`
     font-size: 4rem;
 `;
 
-export default class AppHeader extends Component {
-  render() {
-    return (
-      <>
-        <Header>
-          <Img src={logo} alt="React logo" />
-          <H1>Coin Exchange</H1>
-        </Header>
-      </>
-    )
-  }
+export default function AppHeader(props) {
+  return (
+    <>
+      <Header>
+        <Img src={logo} alt="React logo" />
+        <H1>Coin Exchange</H1>
+      </Header>
+    </>
+  )
 }
