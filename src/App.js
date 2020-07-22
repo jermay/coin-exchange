@@ -84,12 +84,17 @@ function App(props) {
     setShowBalance(oldValue => !oldValue);
   }
 
+  const addHelicopterMoney = () => {
+    setBalance(oldValue => oldValue + 1200);
+  }
+
   return (
     <Content>
       <AppHeader />
       <AccountBalance amount={balance}
         showBalance={showBalance}
-        handleToggleShowBalance={handleToggleShowBalance} />
+        handleToggleShowBalance={handleToggleShowBalance}
+        addHelicopterMoney={addHelicopterMoney}/>
       <CoinList coinData={coinData}
         handleRefresh={handleRefresh}
         showBalance={showBalance} />

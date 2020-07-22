@@ -8,7 +8,7 @@ const Section = styled.section`
     padding: 1.5rem 0 1.5rem 5rem;
 `;
 
-const BtnBalance = styled.button`
+const Button = styled.button`
     font-size: 1.4rem;
     margin: 1.5rem 0 1.5rem 5rem;
     background-color: rgb(20, 56, 97);
@@ -29,7 +29,8 @@ export default function AccountBalance(props) {
     return (
         <Section>
             {balance}
-            <BtnBalance onClick={props.handleToggleShowBalance}>{buttonText}</BtnBalance>
+            <Button onClick={props.handleToggleShowBalance}>{buttonText}</Button>
+            <Button onClick={props.addHelicopterMoney}>Add Helicopter $$</Button>
         </Section>
     );
 }
