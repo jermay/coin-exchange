@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { fmt } from '../../js/utils';
 
 const Section = styled.section`
     font-size: 2rem;
@@ -19,18 +20,21 @@ const Button = styled.button`
 
 export default function AccountBalance(props) {
 
-    const buttonText = props.showBalance ?
-        'Hide Balance' : 'Show Balance';
+    let buttonText = 'Show Balance';
+    let balance = null;
+    let btnHelicopterMoney = null;
 
-    let balance = props.showBalance ?
-        <span>Balance: ${props.amount}</span>
-        : null;
+    if (props.showBalance) {
+        buttonText = 'Hide Balance';
+    balance = <span>Balance: {fmt.c.format(props.amount)}</span>;
+        btnHelicopterMoney = <Button onClick={props.addHelicopterMoney}>Add Helicopter $$</Button>;
+    }
 
     return (
         <Section>
             {balance}
             <Button onClick={props.handleToggleShowBalance}>{buttonText}</Button>
-            <Button onClick={props.addHelicopterMoney}>Add Helicopter $$</Button>
+            {btnHelicopterMoney}
         </Section>
     );
 }

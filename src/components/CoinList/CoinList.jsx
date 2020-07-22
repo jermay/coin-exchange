@@ -3,9 +3,20 @@ import Coin from '../Coin/Coin';
 import styled from 'styled-components';
 
 const Table = styled.table`
+  border-collapse: collapse;
   margin: 50px auto 50px auto;
   display: inline-block;
   font-size: 1.4rem;
+`;
+
+const Th = styled.th`
+  border-bottom: 1px solid #cccccc;
+  text-align: left;
+`;
+
+const ThRight = styled(Th)`
+  text-align: right;
+  padding-right: 0.5rem;
 `;
 
 export default function CoinList(props) {
@@ -16,11 +27,11 @@ export default function CoinList(props) {
       <Table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Ticker</th>
-            {props.showBalance ? <th>Balance</th> : null}
-            <th>Price</th>
-            <th>Actions</th>
+            <Th>Name</Th>
+            <Th>Ticker</Th>
+            {props.showBalance ? <ThRight>Balance</ThRight> : null}
+            <ThRight>Price</ThRight>
+            <Th>Actions</Th>
           </tr>
         </thead>
         <tbody>
